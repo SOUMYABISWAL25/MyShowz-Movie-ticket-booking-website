@@ -1,4 +1,9 @@
 {
+  "name": "myshowz-movie-ticket-booking-website",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "mkdir dist 2>nul & xcopy /E /I /Y assets dist\\assets & copy *.html dist\\"
+  },
   "dependencies": {
     "serverless-http": "^3.2.0"
   }
