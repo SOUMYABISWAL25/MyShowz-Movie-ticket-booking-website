@@ -1,4 +1,67 @@
-import { Auth } from 'aws-amplify';
+// Mock Auth object for development
+const MockAuth = {
+    currentAuthenticatedUser: async () => {
+        throw new Error('Not authenticated');
+    },
+    signIn: async (email, password) => {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Mock successful sign in
+        return {
+            username: email,
+            attributes: { email, name: 'Test User' }
+        };
+    },
+    signUp: async ({ username, password, attributes }) => {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Mock successful sign up
+        return {
+            user: {
+                username,
+                attributes
+            }
+        };
+    },
+    confirmSignUp: async (email, code) => {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        if (code === '123456') {
+            return { success: true };
+        } else {
+            throw new Error('Invalid verification code');
+        }
+    },
+    forgotPassword: async (email) => {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return { success: true };
+    },
+    forgotPasswordSubmit: async (email, code, newPassword) => {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        if (code === '123456') {
+            return { success: true };
+        } else {
+            throw new Error('Invalid verification code');
+        }
+    },
+    resendSignUpCode: async (email) => {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return { success: true };
+    },
+    signOut: async () => {
+        return { success: true };
+    }
+};
+
+// Use mock or real Auth based on development mode
+const Auth = window.AmplifyMock ? MockAuth : (await import('aws-amplify')).Auth;
 
 // Global variables for tracking authentication state
 let currentUser = null;
@@ -76,6 +139,8 @@ async function signIn(email, password) {
 async function signUp(email, password, name) {
     try {
         showLoading(true);
+        console.log('Starting sign up process for:', email);
+        
         const { user } = await Auth.signUp({
             username: email,
             password,
@@ -88,8 +153,12 @@ async function signUp(email, password, name) {
         console.log('Sign up success:', user);
         verificationEmail = email;
         
-        showAlert('success', 'Account Created!', 'Please check your email for verification code');
-        showEmailVerificationModal();
+        showAlert('success', 'Account Created!', 'Please check your email for verification code. Use code: 123456 for testing.');
+        
+        // Show the verification modal
+        setTimeout(() => {
+            showEmailVerificationModal();
+        }, 1000);
         
     } catch (error) {
         console.error('Error signing up:', error);
@@ -281,24 +350,68 @@ async function signInWithFacebook() {
 
 // UI Helper Functions
 function showEmailVerificationModal() {
-    document.getElementById('verificationEmail').value = verificationEmail;
-    $('#verificationModal').modal('show');
+    console.log('Showing email verification modal for:', verificationEmail);
+    
+    // Set the email in the modal
+    const emailField = document.getElementById('verificationEmail');
+    if (emailField) {
+        emailField.value = verificationEmail;
+    }
+    
+    // Clear the verification code field
+    const codeField = document.getElementById('verificationCode');
+    if (codeField) {
+        codeField.value = '';
+    }
+    
+    // Show the modal using Bootstrap
+    const modal = document.getElementById('verificationModal');
+    if (modal) {
+        // Use jQuery if available, otherwise use Bootstrap's native method
+        if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#verificationModal').modal('show');
+        } else {
+            // Fallback to native Bootstrap modal
+            const bootstrapModal = new bootstrap.Modal(modal);
+            bootstrapModal.show();
+        }
+    } else {
+        console.error('Verification modal not found');
+    }
 }
 
 function showForgotPasswordModal() {
+    console.log('Showing forgot password modal');
+    
     // Reset the modal to step 1
-    document.getElementById('forgotPasswordStep1').style.display = 'block';
-    document.getElementById('forgotPasswordStep2').style.display = 'none';
-    document.getElementById('forgotPasswordBtn').innerHTML = 'Send Reset Code';
-    document.getElementById('forgotPasswordBtn').setAttribute('onclick', 'initiatePasswordReset()');
+    const step1 = document.getElementById('forgotPasswordStep1');
+    const step2 = document.getElementById('forgotPasswordStep2');
+    const btn = document.getElementById('forgotPasswordBtn');
+    
+    if (step1) step1.style.display = 'block';
+    if (step2) step2.style.display = 'none';
+    if (btn) {
+        btn.innerHTML = 'Send Reset Code';
+        btn.setAttribute('onclick', 'initiatePasswordReset()');
+    }
     
     // Pre-fill email if user is on sign-in tab
     const signinEmail = document.getElementById('signin-email').value;
-    if (signinEmail) {
-        document.getElementById('resetEmail').value = signinEmail;
+    const resetEmailField = document.getElementById('resetEmail');
+    if (signinEmail && resetEmailField) {
+        resetEmailField.value = signinEmail;
     }
     
-    $('#forgotPasswordModal').modal('show');
+    // Show the modal
+    const modal = document.getElementById('forgotPasswordModal');
+    if (modal) {
+        if (typeof $ !== 'undefined' && $.fn.modal) {
+            $('#forgotPasswordModal').modal('show');
+        } else {
+            const bootstrapModal = new bootstrap.Modal(modal);
+            bootstrapModal.show();
+        }
+    }
 }
 
 function showLoading(show) {
