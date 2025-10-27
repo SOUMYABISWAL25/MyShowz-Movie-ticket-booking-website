@@ -97,7 +97,7 @@
 								<!-- Sign In Form -->
 								<div class="tab-pane fade show active" id="signin" role="tabpanel" aria-labelledby="signin-tab">
 									<div class="signin-form-container">
-										<form name="sign-in-form" class="signin-form" action="#" onsubmit="return signInValidateForm()">
+										<form name="sign-in-form" class="signin-form" action="#" onsubmit="console.log('Sign-in form submitted'); return signInValidateForm();">
 											<div class="form-group">
 												<label for="signin-email">Email Address</label>
 												<div class="input-group">
@@ -153,7 +153,7 @@
 								<!-- Sign Up Form -->
 								<div class="tab-pane fade" id="signup" role="tabpanel" aria-labelledby="signup-tab">
 									<div class="signin-form-container">
-										<form name="sign-up-form" class="signin-form" action="#" onsubmit="return signUpValidateForm()">
+										<form name="sign-up-form" class="signin-form" action="#" onsubmit="console.log('Form submitted'); return signUpValidateForm();">
 											<div class="form-group">
 												<label for="signup-name">Full Name</label>
 												<div class="input-group">
@@ -420,10 +420,8 @@
 	<script src="assets/js/jquery-3.3.1.min.js"></script>
 	<script src="assets/js/bootstrap.min.js"></script>
 	<script src="assets/js/theme-change.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/aws-amplify@5.3.11/dist/aws-amplify.min.js"></script>
-	<script type="module" src="assets/js/aws-config.js"></script>
-	<script type="module" src="assets/js/auth.js"></script>
-	<script type="text/javascript" src="assets/js/sign-in.js"></script>
+	<script type="text/javascript" src="assets/js/auth-simple.js"></script>
+	<script type="text/javascript" src="assets/js/sign-in-simple.js"></script>
 
 	<!-- disable body scroll which navbar is in active -->
 	<script>

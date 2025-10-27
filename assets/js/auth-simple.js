@@ -1,23 +1,24 @@
+// Simple authentication functions without modules
+// This ensures compatibility and proper function availability
+
+console.log('Loading auth-simple.js');
+
 // Mock Auth object for development
 const MockAuth = {
     currentAuthenticatedUser: async () => {
         throw new Error('Not authenticated');
     },
     signIn: async (email, password) => {
-        // Simulate API delay
+        console.log('Mock signIn called with:', email);
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock successful sign in
         return {
             username: email,
             attributes: { email, name: 'Test User' }
         };
     },
     signUp: async ({ username, password, attributes }) => {
-        // Simulate API delay
+        console.log('Mock signUp called with:', username);
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock successful sign up
         return {
             user: {
                 username,
@@ -26,9 +27,8 @@ const MockAuth = {
         };
     },
     confirmSignUp: async (email, code) => {
-        // Simulate API delay
+        console.log('Mock confirmSignUp called with:', email, code);
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
         if (code === '123456') {
             return { success: true };
         } else {
@@ -36,14 +36,13 @@ const MockAuth = {
         }
     },
     forgotPassword: async (email) => {
-        // Simulate API delay
+        console.log('Mock forgotPassword called with:', email);
         await new Promise(resolve => setTimeout(resolve, 1000));
         return { success: true };
     },
     forgotPasswordSubmit: async (email, code, newPassword) => {
-        // Simulate API delay
+        console.log('Mock forgotPasswordSubmit called');
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
         if (code === '123456') {
             return { success: true };
         } else {
@@ -51,7 +50,7 @@ const MockAuth = {
         }
     },
     resendSignUpCode: async (email) => {
-        // Simulate API delay
+        console.log('Mock resendSignUpCode called with:', email);
         await new Promise(resolve => setTimeout(resolve, 1000));
         return { success: true };
     },
@@ -60,86 +59,76 @@ const MockAuth = {
     }
 };
 
-// Use mock or real Auth based on development mode
-const Auth = window.AmplifyMock ? MockAuth : (await import('aws-amplify')).Auth;
+// Use mock Auth for development
+const Auth = MockAuth;
 
-// Global variables for tracking authentication state
+// Global variables
 let currentUser = null;
 let verificationEmail = '';
 
-// Initialize authentication state
-document.addEventListener('DOMContentLoaded', function() {
-    checkAuthState();
-});
-
-// Check if user is already authenticated
-async function checkAuthState() {
-    try {
-        const user = await Auth.currentAuthenticatedUser();
-        if (user) {
-            currentUser = user;
-            // Redirect to home page if already authenticated
-            window.location.href = 'index.html';
-        }
-    } catch (error) {
-        // User is not authenticated, stay on sign-in page
-        console.log('User not authenticated');
+// Helper functions
+function showAlert(type, title, message) {
+    console.log(`Alert [${type}]: ${title} - ${message}`);
+    if (typeof asAlertMsg === 'function') {
+        asAlertMsg({
+            type: type,
+            title: title,
+            message: message,
+            button: {
+                title: "Close",
+                bg: "Close Button"
+            }
+        });
+    } else {
+        alert(`${title}: ${message}`);
     }
 }
 
-// Sign In function
+function showLoading(show) {
+    const buttons = document.querySelectorAll('.signin-btn');
+    buttons.forEach(button => {
+        if (show) {
+            button.classList.add('loading');
+            button.disabled = true;
+        } else {
+            button.classList.remove('loading');
+            button.disabled = false;
+        }
+    });
+}
+
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+// Authentication functions
 async function signIn(email, password) {
     try {
         showLoading(true);
+        console.log('SignIn function called with:', email);
         const user = await Auth.signIn(email, password);
         console.log('Sign in success:', user);
         
-        // Check if user needs to change password
-        if (user.challengeName === 'NEW_PASSWORD_REQUIRED') {
-            showAlert('info', 'Password Change Required', 'Please set a new password.');
-            // You can redirect to a password change page here
-            return;
-        }
-        
         showAlert('success', 'Success!', 'Successfully signed in!');
-        
-        // Store user session
         currentUser = user;
         
-        // Redirect to home page after successful login
         setTimeout(() => {
             window.location.href = 'index.html';
         }, 1500);
         
     } catch (error) {
         console.error('Error signing in:', error);
-        let errorMessage = 'Error signing in';
-        
-        if (error.code === 'NotAuthorizedException') {
-            errorMessage = 'Incorrect email or password';
-        } else if (error.code === 'UserNotConfirmedException') {
-            errorMessage = 'Please verify your email address first';
-            verificationEmail = email;
-            showEmailVerificationModal();
-        } else if (error.code === 'UserNotFoundException') {
-            errorMessage = 'User not found. Please sign up first';
-        } else if (error.code === 'TooManyRequestsException') {
-            errorMessage = 'Too many failed attempts. Please try again later';
-        } else if (error.message) {
-            errorMessage = error.message;
-        }
-        
-        showAlert('error', 'Sign In Error', errorMessage);
+        showAlert('error', 'Sign In Error', error.message || 'Error signing in');
     } finally {
         showLoading(false);
     }
 }
 
-// Sign Up function
 async function signUp(email, password, name) {
     try {
         showLoading(true);
-        console.log('Starting sign up process for:', email);
+        console.log('SignUp function called with:', email, name);
         
         const { user } = await Auth.signUp({
             username: email,
@@ -155,32 +144,18 @@ async function signUp(email, password, name) {
         
         showAlert('success', 'Account Created!', 'Please check your email for verification code. Use code: 123456 for testing.');
         
-        // Show the verification modal
         setTimeout(() => {
             showEmailVerificationModal();
         }, 1000);
         
     } catch (error) {
         console.error('Error signing up:', error);
-        let errorMessage = 'Error creating account';
-        
-        if (error.code === 'UsernameExistsException') {
-            errorMessage = 'An account with this email already exists';
-        } else if (error.code === 'InvalidPasswordException') {
-            errorMessage = 'Password does not meet requirements';
-        } else if (error.code === 'InvalidParameterException') {
-            errorMessage = 'Invalid email format';
-        } else if (error.message) {
-            errorMessage = error.message;
-        }
-        
-        showAlert('error', 'Sign Up Error', errorMessage);
+        showAlert('error', 'Sign Up Error', error.message || 'Error creating account');
     } finally {
         showLoading(false);
     }
 }
 
-// Confirm email verification
 async function confirmEmailVerification() {
     const code = document.getElementById('verificationCode').value;
     
@@ -196,7 +171,6 @@ async function confirmEmailVerification() {
         showAlert('success', 'Email Verified!', 'Your email has been verified successfully!');
         $('#verificationModal').modal('hide');
         
-        // Switch to sign in tab
         const signinTab = document.getElementById('signin-tab');
         if (signinTab) {
             signinTab.click();
@@ -204,23 +178,12 @@ async function confirmEmailVerification() {
         
     } catch (error) {
         console.error('Error confirming sign up:', error);
-        let errorMessage = 'Error verifying email';
-        
-        if (error.code === 'CodeMismatchException') {
-            errorMessage = 'Invalid verification code';
-        } else if (error.code === 'ExpiredCodeException') {
-            errorMessage = 'Verification code has expired';
-        } else if (error.message) {
-            errorMessage = error.message;
-        }
-        
-        showAlert('error', 'Verification Error', errorMessage);
+        showAlert('error', 'Verification Error', error.message || 'Error verifying email');
     } finally {
         showLoading(false);
     }
 }
 
-// Resend verification code
 async function resendVerificationCode() {
     try {
         showLoading(true);
@@ -234,7 +197,6 @@ async function resendVerificationCode() {
     }
 }
 
-// Forgot Password - Step 1: Send reset code
 async function initiatePasswordReset() {
     const email = document.getElementById('resetEmail').value;
     
@@ -249,7 +211,6 @@ async function initiatePasswordReset() {
         
         showAlert('success', 'Reset Code Sent!', 'Password reset code sent to your email');
         
-        // Show step 2
         document.getElementById('forgotPasswordStep1').style.display = 'none';
         document.getElementById('forgotPasswordStep2').style.display = 'block';
         document.getElementById('forgotPasswordBtn').innerHTML = 'Reset Password';
@@ -257,21 +218,12 @@ async function initiatePasswordReset() {
         
     } catch (error) {
         console.error('Error initiating forgot password:', error);
-        let errorMessage = 'Error sending reset code';
-        
-        if (error.code === 'UserNotFoundException') {
-            errorMessage = 'No account found with this email address';
-        } else if (error.message) {
-            errorMessage = error.message;
-        }
-        
-        showAlert('error', 'Reset Error', errorMessage);
+        showAlert('error', 'Reset Error', error.message || 'Error sending reset code');
     } finally {
         showLoading(false);
     }
 }
 
-// Forgot Password - Step 2: Reset password
 async function resetPassword() {
     const email = document.getElementById('resetEmail').value;
     const code = document.getElementById('resetCode').value;
@@ -300,7 +252,6 @@ async function resetPassword() {
         showAlert('success', 'Password Reset!', 'Your password has been reset successfully!');
         $('#forgotPasswordModal').modal('hide');
         
-        // Switch to sign in tab
         const signinTab = document.getElementById('signin-tab');
         if (signinTab) {
             signinTab.click();
@@ -308,70 +259,31 @@ async function resetPassword() {
         
     } catch (error) {
         console.error('Error resetting password:', error);
-        let errorMessage = 'Error resetting password';
-        
-        if (error.code === 'CodeMismatchException') {
-            errorMessage = 'Invalid verification code';
-        } else if (error.code === 'ExpiredCodeException') {
-            errorMessage = 'Verification code has expired';
-        } else if (error.code === 'InvalidPasswordException') {
-            errorMessage = 'Password does not meet requirements';
-        } else if (error.message) {
-            errorMessage = error.message;
-        }
-        
-        showAlert('error', 'Reset Error', errorMessage);
+        showAlert('error', 'Reset Error', error.message || 'Error resetting password');
     } finally {
         showLoading(false);
     }
-}
-
-// Sign Out function
-async function signOut() {
-    try {
-        await Auth.signOut();
-        currentUser = null;
-        showAlert('success', 'Signed Out', 'You have been signed out successfully');
-        window.location.href = 'sign_in.html';
-    } catch (error) {
-        console.error('Error signing out:', error);
-        showAlert('error', 'Error', 'Error signing out');
-    }
-}
-
-// Social Sign In functions (placeholder - requires additional configuration)
-async function signInWithGoogle() {
-    showAlert('info', 'Google Sign In', 'Google sign-in requires additional OAuth configuration in AWS Cognito');
-}
-
-async function signInWithFacebook() {
-    showAlert('info', 'Facebook Sign In', 'Facebook sign-in requires additional OAuth configuration in AWS Cognito');
 }
 
 // UI Helper Functions
 function showEmailVerificationModal() {
     console.log('Showing email verification modal for:', verificationEmail);
     
-    // Set the email in the modal
     const emailField = document.getElementById('verificationEmail');
     if (emailField) {
         emailField.value = verificationEmail;
     }
     
-    // Clear the verification code field
     const codeField = document.getElementById('verificationCode');
     if (codeField) {
         codeField.value = '';
     }
     
-    // Show the modal using Bootstrap
     const modal = document.getElementById('verificationModal');
     if (modal) {
-        // Use jQuery if available, otherwise use Bootstrap's native method
         if (typeof $ !== 'undefined' && $.fn.modal) {
             $('#verificationModal').modal('show');
         } else {
-            // Fallback to native Bootstrap modal
             const bootstrapModal = new bootstrap.Modal(modal);
             bootstrapModal.show();
         }
@@ -383,7 +295,6 @@ function showEmailVerificationModal() {
 function showForgotPasswordModal() {
     console.log('Showing forgot password modal');
     
-    // Reset the modal to step 1
     const step1 = document.getElementById('forgotPasswordStep1');
     const step2 = document.getElementById('forgotPasswordStep2');
     const btn = document.getElementById('forgotPasswordBtn');
@@ -395,14 +306,12 @@ function showForgotPasswordModal() {
         btn.setAttribute('onclick', 'initiatePasswordReset()');
     }
     
-    // Pre-fill email if user is on sign-in tab
     const signinEmail = document.getElementById('signin-email').value;
     const resetEmailField = document.getElementById('resetEmail');
     if (signinEmail && resetEmailField) {
         resetEmailField.value = signinEmail;
     }
     
-    // Show the modal
     const modal = document.getElementById('forgotPasswordModal');
     if (modal) {
         if (typeof $ !== 'undefined' && $.fn.modal) {
@@ -414,38 +323,9 @@ function showForgotPasswordModal() {
     }
 }
 
-function showLoading(show) {
-    const buttons = document.querySelectorAll('.signin-btn');
-    buttons.forEach(button => {
-        if (show) {
-            button.classList.add('loading');
-            button.disabled = true;
-        } else {
-            button.classList.remove('loading');
-            button.disabled = false;
-        }
-    });
-}
-
-function showAlert(type, title, message) {
-    if (typeof asAlertMsg === 'function') {
-        asAlertMsg({
-            type: type,
-            title: title,
-            message: message,
-            button: {
-                title: "Close",
-                bg: "Close Button"
-            }
-        });
-    } else {
-        // Fallback alert
-        alert(`${title}: ${message}`);
-    }
-}
-
-// Form validation functions (called from HTML)
+// Form validation functions
 function signInValidateForm() {
+    console.log('signInValidateForm called');
     const email = document.forms["sign-in-form"]["sign-in-email"].value;
     const password = document.forms["sign-in-form"]["sign-in-passwd"].value;
     
@@ -460,7 +340,7 @@ function signInValidateForm() {
     }
     
     signIn(email, password);
-    return false; // Prevent form submission
+    return false;
 }
 
 function signUpValidateForm() {
@@ -501,29 +381,29 @@ function signUpValidateForm() {
     
     console.log('All validations passed, calling signUp function');
     signUp(email, password, name);
-    return false; // Prevent form submission
+    return false;
 }
 
-// Email validation helper
-function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
+// Social login functions
+function signInWithGoogle() {
+    showAlert('info', 'Google Sign In', 'Google sign-in requires additional OAuth configuration in AWS Cognito');
 }
 
-// Export functions for global access
+function signInWithFacebook() {
+    showAlert('info', 'Facebook Sign In', 'Facebook sign-in requires additional OAuth configuration in AWS Cognito');
+}
+
+// Export functions to global scope
 window.signIn = signIn;
 window.signUp = signUp;
 window.confirmEmailVerification = confirmEmailVerification;
 window.resendVerificationCode = resendVerificationCode;
 window.initiatePasswordReset = initiatePasswordReset;
 window.resetPassword = resetPassword;
-window.signOut = signOut;
 window.signInWithGoogle = signInWithGoogle;
 window.signInWithFacebook = signInWithFacebook;
 window.showForgotPasswordModal = showForgotPasswordModal;
 window.showEmailVerificationModal = showEmailVerificationModal;
-
-// Also export the validation functions
 window.signInValidateForm = signInValidateForm;
 window.signUpValidateForm = signUpValidateForm;
 
@@ -532,3 +412,16 @@ console.log('Auth functions exported to global scope:', {
     signUp: typeof window.signUp,
     signUpValidateForm: typeof window.signUpValidateForm
 });
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, auth functions ready');
+    
+    // Test if functions are available
+    console.log('Function availability test:', {
+        signUpValidateForm: typeof window.signUpValidateForm,
+        signInValidateForm: typeof window.signInValidateForm,
+        signUp: typeof window.signUp
+    });
+});
+

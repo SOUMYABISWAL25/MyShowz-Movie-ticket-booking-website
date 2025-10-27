@@ -1,7 +1,10 @@
-// Sign In Page JavaScript
+// Simple sign-in UI interactions
+console.log('Loading sign-in-simple.js');
 
 // Password visibility toggle
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Sign-in UI initialized');
+    
     // Toggle password visibility for sign in form
     const toggleSigninPassword = document.getElementById('toggleSigninPassword');
     const signinPasswordInput = document.getElementById('signin-password');
@@ -54,82 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Form submission loading states
-    const signinForm = document.querySelector('form[name="sign-in-form"]');
-    const signupForm = document.querySelector('form[name="sign-up-form"]');
-    
-    if (signinForm) {
-        signinForm.addEventListener('submit', function() {
-            const submitBtn = this.querySelector('.signin-btn');
-            if (submitBtn) {
-                submitBtn.classList.add('loading');
-                submitBtn.disabled = true;
-            }
-        });
-    }
-    
-    if (signupForm) {
-        signupForm.addEventListener('submit', function() {
-            const submitBtn = this.querySelector('.signin-btn');
-            if (submitBtn) {
-                submitBtn.classList.add('loading');
-                submitBtn.disabled = true;
-            }
-        });
-    }
-});
-
-// Form validation functions are now handled in auth.js
-// This file now only handles UI interactions
-
-// Add click event listener to Create Account button as backup
-document.addEventListener('DOMContentLoaded', function() {
-    const createAccountBtn = document.querySelector('button[type="submit"]');
-    if (createAccountBtn) {
-        createAccountBtn.addEventListener('click', function(e) {
-            console.log('Create Account button clicked');
-            // Let the form submission handle it
-        });
-    }
-    
-    // Also add event listener to the form itself
-    const signUpForm = document.querySelector('form[name="sign-up-form"]');
-    if (signUpForm) {
-        signUpForm.addEventListener('submit', function(e) {
-            console.log('Sign-up form submit event triggered');
-            e.preventDefault();
-            if (typeof signUpValidateForm === 'function') {
-                return signUpValidateForm();
-            } else {
-                console.error('signUpValidateForm function not found');
-                return false;
-            }
-        });
-    }
-});
-
-// Email validation helper function is now in auth.js
-
-// Alert message function is now in auth.js
-
-// Social login handlers are now handled by the auth.js file
-// The buttons call signInWithGoogle() and signInWithFacebook() functions
-
-// Forgot password handler is now handled by the auth.js file
-// The link calls showForgotPasswordModal() function
-
-// Form field animations
-document.addEventListener('DOMContentLoaded', function() {
-    const formGroups = document.querySelectorAll('.signin-form .form-group');
-    
-    // Add animation delay to form groups
-    formGroups.forEach((group, index) => {
-        group.style.animationDelay = `${index * 0.1}s`;
-    });
-});
-
-// Tab switching functionality
-document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
     const tabLinks = document.querySelectorAll('#signinTabs .nav-link');
     const tabPanes = document.querySelectorAll('.tab-pane');
     
@@ -167,11 +95,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Initialize Bootstrap tabs if available
-    if (typeof $ !== 'undefined' && $.fn.tab) {
-        $('#signinTabs a').on('click', function (e) {
-            e.preventDefault();
-            $(this).tab('show');
+    // Form field animations
+    const formGroups = document.querySelectorAll('.signin-form .form-group');
+    formGroups.forEach((group, index) => {
+        group.style.animationDelay = `${index * 0.1}s`;
+    });
+    
+    // Test function availability
+    setTimeout(() => {
+        console.log('Function availability check:', {
+            signUpValidateForm: typeof window.signUpValidateForm,
+            signInValidateForm: typeof window.signInValidateForm,
+            signUp: typeof window.signUp
         });
-    }
+    }, 1000);
 });
+
