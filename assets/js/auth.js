@@ -332,7 +332,7 @@ async function signOut() {
         await Auth.signOut();
         currentUser = null;
         showAlert('success', 'Signed Out', 'You have been signed out successfully');
-        window.location.href = 'sign_in.html';
+        window.location.href = 'index.html';
     } catch (error) {
         console.error('Error signing out:', error);
         showAlert('error', 'Error', 'Error signing out');

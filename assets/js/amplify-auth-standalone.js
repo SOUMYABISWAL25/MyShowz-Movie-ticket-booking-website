@@ -428,7 +428,7 @@ window.amplifyAuth = {
         localStorage.removeItem('userEmail');
         localStorage.removeItem('isAuthenticated');
         console.log('User signed out');
-        window.location.href = 'sign_in.html';
+        window.location.href = 'index.html';
     },
     getCurrentUser: function() {
         const sessionStr = localStorage.getItem('userSession');
