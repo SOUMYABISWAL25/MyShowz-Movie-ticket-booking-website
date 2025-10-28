@@ -97,14 +97,14 @@
 								<!-- Sign In Form -->
 								<div class="tab-pane fade show active" id="signin" role="tabpanel" aria-labelledby="signin-tab">
 									<div class="signin-form-container">
-										<form id="signInForm" class="signin-form">
+										<form name="sign-in-form" class="signin-form" action="#" onsubmit="console.log('Sign-in form submitted'); return signInValidateForm();">
 											<div class="form-group">
 												<label for="signin-email">Email Address</label>
 												<div class="input-group">
 													<div class="input-group-prepend">
 														<span class="input-group-text"><i class="fa fa-envelope"></i></span>
 													</div>
-													<input type="email" class="form-control" id="signin-email" placeholder="Enter your email" required>
+													<input type="email" class="form-control" id="signin-email" name="sign-in-email" placeholder="Enter your email" required>
 												</div>
 											</div>
 
@@ -114,7 +114,7 @@
 													<div class="input-group-prepend">
 														<span class="input-group-text"><i class="fa fa-lock"></i></span>
 													</div>
-													<input type="password" class="form-control" id="signin-password" placeholder="Enter your password" required>
+													<input type="password" class="form-control" id="signin-password" name="sign-in-passwd" placeholder="Enter your password" required>
 													<div class="input-group-append">
 														<button class="btn btn-outline-secondary" type="button" id="toggleSigninPassword">
 															<i class="fa fa-eye"></i>
@@ -128,19 +128,23 @@
 												<label class="form-check-label" for="rememberMe">
 													Remember me
 												</label>
-												<a href="#" class="forgot-password" data-toggle="modal" data-target="#forgotPasswordModal">Forgot Password?</a>
+												<a href="#" class="forgot-password" onclick="showForgotPasswordModal()">Forgot Password?</a>
 											</div>
 
 											<button type="submit" class="btn btn-primary btn-block signin-btn">
 												<i class="fa fa-sign-in-alt"></i> Sign In
 											</button>
 
-											<div class="text-center mt-3">
-												<div id="signin-loading" style="display: none;">
-													<i class="fa fa-spinner fa-spin"></i> Signing in...
+											<div class="social-login">
+												<p class="text-center">Or sign in with</p>
+												<div class="social-buttons">
+													<button type="button" class="btn btn-social btn-google" onclick="signInWithGoogle()">
+														<i class="fab fa-google"></i> Google
+													</button>
+													<button type="button" class="btn btn-social btn-facebook" onclick="signInWithFacebook()">
+														<i class="fab fa-facebook-f"></i> Facebook
+													</button>
 												</div>
-												<div id="signin-error" class="alert alert-danger" style="display: none;"></div>
-												<div id="signin-success" class="alert alert-success" style="display: none;"></div>
 											</div>
 										</form>
 									</div>
@@ -149,14 +153,14 @@
 								<!-- Sign Up Form -->
 								<div class="tab-pane fade" id="signup" role="tabpanel" aria-labelledby="signup-tab">
 									<div class="signin-form-container">
-										<form id="signUpForm" class="signin-form">
+										<form name="sign-up-form" class="signin-form" action="#" onsubmit="console.log('Form submitted'); return signUpValidateForm();">
 											<div class="form-group">
 												<label for="signup-name">Full Name</label>
 												<div class="input-group">
 													<div class="input-group-prepend">
 														<span class="input-group-text"><i class="fa fa-user"></i></span>
 													</div>
-													<input type="text" class="form-control" id="signup-name" placeholder="Enter your full name" required>
+													<input type="text" class="form-control" id="signup-name" name="sign-up-name" placeholder="Enter your full name" required>
 												</div>
 											</div>
 
@@ -166,7 +170,7 @@
 													<div class="input-group-prepend">
 														<span class="input-group-text"><i class="fa fa-envelope"></i></span>
 													</div>
-													<input type="email" class="form-control" id="signup-email" placeholder="Enter your email" required>
+													<input type="email" class="form-control" id="signup-email" name="sign-up-email" placeholder="Enter your email" required>
 												</div>
 											</div>
 
@@ -176,7 +180,7 @@
 													<div class="input-group-prepend">
 														<span class="input-group-text"><i class="fa fa-lock"></i></span>
 													</div>
-													<input type="password" class="form-control" id="signup-password" placeholder="Create a password" required>
+													<input type="password" class="form-control" id="signup-password" name="sign-up-passwd" placeholder="Create a password" required>
 													<div class="input-group-append">
 														<button class="btn btn-outline-secondary" type="button" id="toggleSignupPassword">
 															<i class="fa fa-eye"></i>
@@ -192,14 +196,14 @@
 													<div class="input-group-prepend">
 														<span class="input-group-text"><i class="fa fa-lock"></i></span>
 													</div>
-													<input type="password" class="form-control" id="confirm-password" placeholder="Confirm your password" required>
+													<input type="password" class="form-control" id="confirm-password" name="confirm-password" placeholder="Confirm your password" required>
 												</div>
 											</div>
 
 											<div class="form-group form-check">
 												<input type="checkbox" class="form-check-input" id="agreeTerms" required>
 												<label class="form-check-label" for="agreeTerms">
-													I agree to the <a href="#" class="terms-link">Terms and Conditions</a>
+													I agree to the <a href="#" class="terms-link">Terms and Conditions</a> and <a href="#" class="terms-link">Privacy Policy</a>
 												</label>
 											</div>
 
@@ -207,12 +211,16 @@
 												<i class="fa fa-user-plus"></i> Create Account
 											</button>
 
-											<div class="text-center mt-3">
-												<div id="signup-loading" style="display: none;">
-													<i class="fa fa-spinner fa-spin"></i> Creating account...
+											<div class="social-login">
+												<p class="text-center">Or sign up with</p>
+												<div class="social-buttons">
+													<button type="button" class="btn btn-social btn-google">
+														<i class="fab fa-google"></i> Google
+													</button>
+													<button type="button" class="btn btn-social btn-facebook">
+														<i class="fab fa-facebook-f"></i> Facebook
+													</button>
 												</div>
-												<div id="signup-error" class="alert alert-danger" style="display: none;"></div>
-												<div id="signup-success" class="alert alert-success" style="display: none;"></div>
 											</div>
 										</form>
 									</div>
@@ -237,23 +245,24 @@
 				</div>
 				<div class="modal-body">
 					<p>Please check your email and enter the verification code below:</p>
+					<div class="alert alert-info" role="alert">
+						<strong>Development Mode:</strong> Use code <code>123456</code> for testing.
+					</div>
 					<form id="verificationForm">
 						<div class="form-group">
 							<label for="verificationCode">Verification Code</label>
-							<input type="text" class="form-control" id="verificationCode" placeholder="Enter 6-digit code" required>
+							<input type="text" class="form-control" id="verificationCode" placeholder="Enter verification code" required>
 						</div>
 						<div class="form-group">
 							<label for="verificationEmail">Email</label>
 							<input type="email" class="form-control" id="verificationEmail" readonly>
 						</div>
 					</form>
-					<div id="verification-error" class="alert alert-danger" style="display: none;"></div>
-					<div id="verification-success" class="alert alert-success" style="display: none;"></div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-info" id="resendCodeBtn">Resend Code</button>
-					<button type="button" class="btn btn-primary" id="verifyEmailBtn">Verify Email</button>
+					<button type="button" class="btn btn-info" onclick="resendVerificationCode()">Resend Code</button>
+					<button type="button" class="btn btn-primary" onclick="confirmEmailVerification()">Verify Email</button>
 				</div>
 			</div>
 		</div>
@@ -296,12 +305,10 @@
 							</div>
 						</form>
 					</div>
-					<div id="forgot-error" class="alert alert-danger" style="display: none;"></div>
-					<div id="forgot-success" class="alert alert-success" style="display: none;"></div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-					<button type="button" class="btn btn-primary" id="forgotPasswordBtn">Send Reset Code</button>
+					<button type="button" class="btn btn-primary" id="forgotPasswordBtn" onclick="initiatePasswordReset()">Send Reset Code</button>
 				</div>
 			</div>
 		</div>
@@ -316,16 +323,20 @@
 						<div class="right-side">
 							<div class="row footer-about">
 								<div class="col-md-3 col-6 footer-img mb-lg-0 mb-4">
-									<a href="movies.html"><img class="img-fluid" src="assets/images/banner1.jpg" alt=""></a>
+									<a href="movies.html"><img class="img-fluid" src="assets/images/banner1.jpg"
+											alt=""></a>
 								</div>
 								<div class="col-md-3 col-6 footer-img mb-lg-0 mb-4">
-									<a href="movies.html"><img class="img-fluid" src="assets/images/banner2.jpg" alt=""></a>
+									<a href="movies.html"><img class="img-fluid" src="assets/images/banner2.jpg"
+											alt=""></a>
 								</div>
 								<div class="col-md-3 col-6 footer-img mb-lg-0 mb-4">
-									<a href="movies.html"><img class="img-fluid" src="assets/images/banner3.jpg" alt=""></a>
+									<a href="movies.html"><img class="img-fluid" src="assets/images/banner3.jpg"
+											alt=""></a>
 								</div>
 								<div class="col-md-3 col-6 footer-img mb-lg-0 mb-4">
-									<a href="movies.html"><img class="img-fluid" src="assets/images/banner4.jpg" alt=""></a>
+									<a href="movies.html"><img class="img-fluid" src="assets/images/banner4.jpg"
+											alt=""></a>
 								</div>
 							</div>
 							<div class="row footer-links">
@@ -335,6 +346,7 @@
 										<li><a href="#">Movies</a></li>
 										<li><a href="#">Videos</a></li>
 										<li><a href="#">English Movies</a></li>
+										<li><a href="#">Tailor</a></li>
 										<li><a href="#">Upcoming Movies</a></li>
 										<li><a href="Contact_Us.html">Contact Us</a></li>
 									</ul>
@@ -342,9 +354,11 @@
 								<div class="col-md-3 col-sm-6 sub-two-right mt-5">
 									<h6>Information</h6>
 									<ul>
-										<li><a href="index.html">Home</a></li>
-										<li><a href="about.html">About</a></li>
-										<li><a href="sign_in_new.html">Login</a></li>
+										<li><a href="index.html">Home</a> </li>
+										<li><a href="about.html">About</a> </li>
+										<li><a href="#">Tv Series</a> </li>
+										<li><a href="#">Blogs</a> </li>
+										<li><a href="sign_in.html">Login</a></li>
 										<li><a href="Contact_Us.html">Contact</a></li>
 									</ul>
 								</div>
@@ -365,24 +379,31 @@
 										<input type="email" name="email" placeholder="Your Email Address" required="">
 										<button><span class="fa fa-envelope-o"></span></button>
 									</form>
-									<p>Enter your email and receive the latest news from us.</p>
+									<p>Enter your email and receive the latest news, updates and special offers from us.
+									</p>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+			</div>
 			<div class="below-section">
 				<div class="container">
 					<div class="copyright-footer">
 						<div class="columns text-lg-left">
 							<p>&copy; 2024 MyShowz. Cloud Technology</p>
-						</div>
+					   </div>
+
 						<ul class="social text-lg-right">
-							<li><a href="#facebook"><span class="fa fa-facebook" aria-hidden="true"></span></a></li>
-							<li><a href="#linkedin"><span class="fa fa-linkedin" aria-hidden="true"></span></a></li>
-							<li><a href="#twitter"><span class="fa fa-twitter" aria-hidden="true"></span></a></li>
-							<li><a href="#google"><span class="fa fa-google-plus" aria-hidden="true"></span></a></li>
+							<li><a href="#facebook"><span class="fa fa-facebook" aria-hidden="true"></span></a>
+							</li>
+							<li><a href="#linkedin"><span class="fa fa-linkedin" aria-hidden="true"></span></a>
+							</li>
+							<li><a href="#twitter"><span class="fa fa-twitter" aria-hidden="true"></span></a>
+							</li>
+							<li><a href="#google"><span class="fa fa-google-plus" aria-hidden="true"></span></a>
+							</li>
 						</ul>
 					</div>
 				</div>
@@ -395,12 +416,12 @@
 	</footer>
 
 	<!-- Scripts -->
+	<script type="text/javascript" src="assets/js/as-alert-message.min.js"></script>
 	<script src="assets/js/jquery-3.3.1.min.js"></script>
 	<script src="assets/js/bootstrap.min.js"></script>
 	<script src="assets/js/theme-change.js"></script>
-	
-	<!-- AWS Amplify Authentication -->
-	<script src="assets/js/amplify-auth-standalone.js"></script>
+	<script type="text/javascript" src="assets/js/auth-simple.js"></script>
+	<script type="text/javascript" src="assets/js/sign-in-simple.js"></script>
 
 	<!-- disable body scroll which navbar is in active -->
 	<script>
@@ -436,31 +457,6 @@
 					$("header").removeClass("active");
 				}
 			});
-		});
-
-		// Password toggle
-		$('#toggleSigninPassword').click(function() {
-			const input = $('#signin-password');
-			const icon = $(this).find('i');
-			if (input.attr('type') === 'password') {
-				input.attr('type', 'text');
-				icon.removeClass('fa-eye').addClass('fa-eye-slash');
-			} else {
-				input.attr('type', 'password');
-				icon.removeClass('fa-eye-slash').addClass('fa-eye');
-			}
-		});
-
-		$('#toggleSignupPassword').click(function() {
-			const input = $('#signup-password');
-			const icon = $(this).find('i');
-			if (input.attr('type') === 'password') {
-				input.attr('type', 'text');
-				icon.removeClass('fa-eye').addClass('fa-eye-slash');
-			} else {
-				input.attr('type', 'password');
-				icon.removeClass('fa-eye-slash').addClass('fa-eye');
-			}
 		});
 
 		// Move to top function

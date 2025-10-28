@@ -2,6 +2,8 @@
   "name": "myshowz-movie-ticket-booking-website",
   "version": "1.0.0",
   "scripts": {
+    "dev": "npx http-server -p 3000 -o",
+    "start": "npx http-server -p 3000",
     "build": "mkdir -p dist && cp -r assets dist/ && cp *.html dist/"
   },
   "dependencies": {
