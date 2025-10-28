@@ -54,69 +54,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Form submission loading states
-    const signinForm = document.querySelector('form[name="sign-in-form"]');
-    const signupForm = document.querySelector('form[name="sign-up-form"]');
-    
-    if (signinForm) {
-        signinForm.addEventListener('submit', function() {
-            const submitBtn = this.querySelector('.signin-btn');
-            if (submitBtn) {
-                submitBtn.classList.add('loading');
-                submitBtn.disabled = true;
-            }
-        });
-    }
-    
-    if (signupForm) {
-        signupForm.addEventListener('submit', function() {
-            const submitBtn = this.querySelector('.signin-btn');
-            if (submitBtn) {
-                submitBtn.classList.add('loading');
-                submitBtn.disabled = true;
-            }
-        });
-    }
+    // Form submission is handled by amplify-auth-standalone.js
+    // This file only handles UI interactions
 });
 
-// Form validation functions are now handled in auth.js
-// This file now only handles UI interactions
-
-// Add click event listener to Create Account button as backup
-document.addEventListener('DOMContentLoaded', function() {
-    const createAccountBtn = document.querySelector('button[type="submit"]');
-    if (createAccountBtn) {
-        createAccountBtn.addEventListener('click', function(e) {
-            console.log('Create Account button clicked');
-            // Let the form submission handle it
-        });
-    }
-    
-    // Also add event listener to the form itself
-    const signUpForm = document.querySelector('form[name="sign-up-form"]');
-    if (signUpForm) {
-        signUpForm.addEventListener('submit', function(e) {
-            console.log('Sign-up form submit event triggered');
-            e.preventDefault();
-            if (typeof signUpValidateForm === 'function') {
-                return signUpValidateForm();
-            } else {
-                console.error('signUpValidateForm function not found');
-                return false;
-            }
-        });
-    }
-});
-
-// Email validation helper function is now in auth.js
-
-// Alert message function is now in auth.js
-
-// Social login handlers are now handled by the auth.js file
-// The buttons call signInWithGoogle() and signInWithFacebook() functions
-
-// Forgot password handler is now handled by the auth.js file
-// The link calls showForgotPasswordModal() function
+// Form validation and submission are handled by amplify-auth-standalone.js
+// This file only handles UI interactions like password visibility toggle and tab switching
 
 // Form field animations
 document.addEventListener('DOMContentLoaded', function() {
