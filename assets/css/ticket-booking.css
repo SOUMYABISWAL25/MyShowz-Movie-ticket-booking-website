@@ -14,6 +14,50 @@ h2 {
 	margin-bottom: 20px;
 }
 
+/* Current Date/Time Display */
+.current-datetime {
+	text-align: center;
+	padding: 15px;
+	background: var(--theme-lite);
+	border-radius: 8px;
+	margin-bottom: 20px;
+	font-size: 1rem;
+	color: var(--theme-title);
+	border: 1px solid var(--theme-border);
+}
+
+.current-datetime span {
+	font-weight: 600;
+}
+
+#current-time-display {
+	color: var(--theme-rose);
+	margin-left: 10px;
+}
+
+/* Past Time Styling */
+.screen-time.past-time {
+	opacity: 0.4;
+	cursor: not-allowed !important;
+	background: #ccc !important;
+	color: #666 !important;
+	text-decoration: line-through;
+}
+
+.screen-time.past-time:hover {
+	background: #ccc !important;
+	transform: none !important;
+}
+
+/* Selected Time Styling */
+.screen-time.selected-time {
+	background: var(--theme-rose) !important;
+	color: white !important;
+	border: 2px solid var(--theme-rose);
+	transform: scale(1.05);
+	box-shadow: 0 4px 8px rgba(223, 14, 98, 0.3);
+}
+
 /* custom css */
 
 #progress-container-id {

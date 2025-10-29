@@ -8,6 +8,8 @@
     <title>E-Ticket</title>
     <link rel="stylesheet" type="text/css" href="assets/css/e-ticket.css">
     <link href="https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:400,700" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="assets/js/booking-manager.js"></script>
 
 </head>
 
@@ -17,11 +19,11 @@
         <div class="holes-top"></div>
         <div class="title">
             <p class="cinema">MyShowz Entertainment PRESENTS</p>
-            <p class="movie-title">Movie Name</p>
+            <p class="movie-title" id="ticket-movie-name">Movie Name</p>
         </div>
         <div class="poster">
-            <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/25240/only-god-forgives.jpg"
-                alt="Movie: Only God Forgives" />
+            <img id="ticket-movie-poster" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/25240/only-god-forgives.jpg"
+                alt="Movie Poster" />
         </div>
         <div class="info">
             <table>
@@ -31,9 +33,9 @@
                     <th>SEAT</th>
                 </tr>
                 <tr>
-                    <td class="bigger">18</td>
-                    <td class="bigger">H</td>
-                    <td class="bigger">24</td>
+                    <td class="bigger" id="ticket-screen">18</td>
+                    <td class="bigger" id="ticket-row">H</td>
+                    <td class="bigger" id="ticket-seat">24</td>
                 </tr>
             </table>
             <table>
@@ -43,9 +45,9 @@
                     <th>TIME</th>
                 </tr>
                 <tr>
-                    <td>Rs. 12.00</td>
-                    <td>4/13/21</td>
-                    <td>19:30</td>
+                    <td id="ticket-price">Rs. 12.00</td>
+                    <td id="ticket-date">4/13/21</td>
+                    <td id="ticket-time">19:30</td>
                 </tr>
             </table>
         </div>
@@ -173,8 +175,7 @@
                 </tr>
             </table>
             <table class="numbers">
-                
-                <tr>
+                <tr id="ticket-booking-id">
                     <td>9</td>
                     <td>1</td>
                     <td>7</td>
@@ -201,6 +202,7 @@
             </table>
         </div>
     </div>
+    <script src="assets/js/e-ticket.js"></script>
 </body>
 
 </html>

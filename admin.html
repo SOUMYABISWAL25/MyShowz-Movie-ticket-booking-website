@@ -722,7 +722,66 @@
 	<script src="assets/js/bootstrap.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<script type="text/javascript" src="assets/js/as-alert-message.min.js"></script>
-	<script type="text/javascript" src="assets/js/admin.js"></script>
+	<script src="assets/js/booking-manager.js"></script>
+	<script src="assets/js/admin.js"></script>
+	
+	<!-- Real-time Status Indicator -->
+	<script>
+		// Add real-time indicator to dashboard
+		document.addEventListener('DOMContentLoaded', function() {
+			const dashboardHeader = document.querySelector('#dashboard-section .section-header h2');
+			if (dashboardHeader) {
+				const indicator = document.createElement('span');
+				indicator.className = 'realtime-indicator';
+				indicator.title = 'Real-time updates active';
+				dashboardHeader.prepend(indicator);
+			}
+			
+			// Add test booking button for debugging
+			const sectionHeader = document.querySelector('#dashboard-section .section-header');
+			if (sectionHeader && window.bookingManager) {
+				const testBtn = document.createElement('button');
+				testBtn.className = 'btn btn-sm btn-outline-success';
+				testBtn.style.marginLeft = '10px';
+				testBtn.innerHTML = '<i class="fa fa-plus"></i> Add Test Booking';
+				testBtn.onclick = function() {
+					// Create a test booking
+					const booking = window.bookingManager.createBooking({
+						userName: 'Test Customer ' + Math.floor(Math.random() * 100),
+						userEmail: 'test' + Date.now() + '@example.com',
+						movieName: ['Avatar 2', 'Spider-Man', 'Inception', 'Avengers'][Math.floor(Math.random() * 4)],
+						screen: 'Screen ' + (Math.floor(Math.random() * 5) + 1),
+						date: new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+						time: ['09:00', '13:00', '16:00', '19:00', '22:00'][Math.floor(Math.random() * 5)],
+						seats: ['A1', 'A2'],
+						seatCount: 2,
+						amount: 200 + Math.floor(Math.random() * 400),
+						status: ['Confirmed', 'Confirmed', 'Pending'][Math.floor(Math.random() * 3)]
+					});
+					
+					console.log('Test booking created:', booking);
+					
+					// Show success message
+					if (typeof showAlert === 'function') {
+						showAlert('success', 'Booking Created', 'Test booking ' + booking.id + ' created successfully!');
+					} else {
+						alert('Test booking created: ' + booking.id);
+					}
+					
+					// Refresh the dashboard
+					setTimeout(() => {
+						if (typeof refreshCurrentSection === 'function') {
+							refreshCurrentSection();
+						} else {
+							location.reload();
+						}
+					}, 500);
+				};
+				
+				sectionHeader.appendChild(testBtn);
+			}
+		});
+	</script>
 </body>
 
 </html>

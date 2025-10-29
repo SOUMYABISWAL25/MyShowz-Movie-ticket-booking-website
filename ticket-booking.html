@@ -63,122 +63,15 @@
             <fieldset>
               <div id="screen-select-div">
                 <h2>Show time Selection</h2>
-                <div class="carousel carousel-nav" data-flickity='{"contain": true, "pageDots": false }'>
-                  <div class="carousel-cell" id="1" onclick="myFunction(1)">
-                    <div class="date-numeric">13</div>
-                    <div class="date-day">Today</div>
-                  </div>
-
-                  <div class="carousel-cell" id="2" onclick="myFunction(2)">
-                    <div class="date-numeric">14</div>
-                    <div class="date-day">Tomorrow</div>
-                  </div>
-                  <div class="carousel-cell" id="3" onclick="myFunction(3)">
-                    <div class="date-numeric">15</div>
-                    <div class="date-day">Monday</div>
-                  </div>
-                  <div class="carousel-cell" id="4" onclick="myFunction(4)">
-                    <div class="date-numeric">16</div>
-                    <div class="date-day">Tuesday</div>
-                  </div>
-                  <div class="carousel-cell" id="5" onclick="myFunction(5)">
-                    <div class="date-numeric">17</div>
-                    <div class="date-day">Wednesday</div>
-                  </div>
-                  <div class="carousel-cell" id="6" onclick="myFunction(6)">
-                    <div class="date-numeric">18</div>
-                    <div class="date-day">Thursday</div>
-                  </div>
-                  <div class="carousel-cell" id="7" onclick="myFunction(7)">
-                    <div class="date-numeric">19</div>
-                    <div class="date-day">Friday</div>
-                  </div>
+                <div class="current-datetime">
+                  <span id="current-date-display"></span>
+                  <span id="current-time-display"></span>
                 </div>
-                <ul class="time-ul">
-                  <li class="time-li">
-                    <div class="screens">
-                      Screen 1
-                    </div>
-                    <div class="time-btn">
-                      <button class="screen-time" onclick="timeFunction()">
-                        1:05 PM
-                      </button>
-                      <button class="screen-time" onclick="timeFunction()">
-                        4:00 PM
-                      </button>
-                      <button class="screen-time" onclick="timeFunction()">
-                        9:00 PM
-                      </button>
-                    </div>
-                  </li>
-                  <li class="time-li">
-                    <div class="screens">
-                      Screen 2
-                    </div>
-                    <div class="time-btn">
-                      <button class="screen-time" onclick="timeFunction()">
-                        3:00 PM
-                      </button>
-                    </div>
-                  </li>
-                  <li class="time-li">
-                    <div class="screens">
-                      Screen 3
-                    </div>
-                    <div class="time-btn">
-                      <button class="screen-time" onclick="timeFunction()">
-                        9:05 AM
-                      </button>
-                      <button class="screen-time" onclick="timeFunction()">
-                        10:00 PM
-                      </button>
-                    </div>
-                  </li>
-                  <li class="time-li">
-                    <div class="screens">
-                      Screen 4
-                    </div>
-                    <div class="time-btn">
-                      <button class="screen-time" onclick="timeFunction()">
-                        9:05 AM
-                      </button>
-                      <button class="screen-time" onclick="timeFunction()">
-                        11:00 AM
-                      </button>
-                      <button class="screen-time" onclick="timeFunction()">
-                        3:00 PM
-                      </button>
-                      <button class="screen-time" onclick="timeFunction()">
-                        7:00 PM
-                      </button>
-                      <button class="screen-time" onclick="timeFunction()">
-                        10:00 PM
-                      </button>
-                      <button class="screen-time" onclick="timeFunction()">
-                        11:00 PM
-                      </button>
-                    </div>
-                  </li>
-                  <li class="time-li">
-                    <div class="screens">
-                      Screen 5
-                    </div>
-                    <div class="time-btn">
-                      <button class="screen-time" onclick="timeFunction()">
-                        9:05 AM
-                      </button>
-                      <button class="screen-time" onclick="timeFunction()">
-                        12:00 PM
-                      </button>
-                      <button class="screen-time" onclick="timeFunction()">
-                        1:00 PM
-                      </button>
-                      <button class="screen-time" onclick="timeFunction()">
-                        3:00 PM
-                      </button>
-                    </div>
-                  </li>
-
+                <div class="carousel carousel-nav" id="date-carousel" data-flickity='{"contain": true, "pageDots": false }'>
+                  <!-- Dates will be dynamically generated here -->
+                </div>
+                <ul class="time-ul" id="show-times-container">
+                  <!-- Show times will be dynamically generated here -->
                 </ul>
               </div>
               <input id="screen-next-btn" type="button" name="next-step" class="next-step" value="Continue Booking"
@@ -471,20 +364,184 @@
   </div>
 </body>
 <script>
-  let prevId = "1";
+  let prevId = null;
+  let selectedDate = null;
+  let selectedTime = null;
+  let selectedScreen = null;
+
+  // Show times configuration (24-hour format)
+  const showTimesData = {
+    'Screen 1': ['09:00', '13:05', '16:00', '21:00'],
+    'Screen 2': ['10:30', '15:00', '19:30'],
+    'Screen 3': ['09:05', '12:00', '17:00', '22:00'],
+    'Screen 4': ['09:05', '11:00', '15:00', '19:00', '22:00', '23:00'],
+    'Screen 5': ['09:05', '12:00', '13:00', '15:00', '18:30']
+  };
 
   window.onload = function () {
     document.getElementById("screen-next-btn").disabled = true;
+    initializeDateSelection();
+    updateCurrentDateTime();
+    // Update current time every minute
+    setInterval(updateCurrentDateTime, 60000);
   }
 
+  function updateCurrentDateTime() {
+    const now = new Date();
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+    
+    document.getElementById('current-date-display').textContent = 
+      'Today: ' + now.toLocaleDateString('en-US', dateOptions);
+    document.getElementById('current-time-display').textContent = 
+      ' | Current Time: ' + now.toLocaleTimeString('en-US', timeOptions);
+  }
+
+  function initializeDateSelection() {
+    const carousel = document.getElementById('date-carousel');
+    const today = new Date();
+    
+    // Generate next 7 days
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      
+      const dayNum = date.getDate();
+      const dayName = i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : 
+                      date.toLocaleDateString('en-US', { weekday: 'long' });
+      const fullDate = date.toISOString().split('T')[0];
+      
+      const cell = document.createElement('div');
+      cell.className = 'carousel-cell';
+      cell.id = 'date-' + i;
+      cell.setAttribute('data-date', fullDate);
+      cell.onclick = function() { selectDate(i, fullDate); };
+      
+      cell.innerHTML = `
+        <div class="date-numeric">${dayNum}</div>
+        <div class="date-day">${dayName}</div>
+      `;
+      
+      carousel.appendChild(cell);
+    }
+    
+    // Initialize Flickity after adding cells
+    setTimeout(() => {
+      const flkty = new Flickity(carousel, {
+        contain: true,
+        pageDots: false
+      });
+    }, 100);
+  }
+
+  function selectDate(id, dateString) {
+    // Remove previous selection
+    if (prevId !== null) {
+      document.getElementById('date-' + prevId).style.background = "rgb(243, 235, 235)";
+    }
+    
+    // Set new selection
+    document.getElementById('date-' + id).style.background = "#df0e62";
+    prevId = id;
+    selectedDate = dateString;
+    
+    // Generate show times for selected date
+    generateShowTimes(dateString);
+  }
+
+  function generateShowTimes(dateString) {
+    const container = document.getElementById('show-times-container');
+    container.innerHTML = '';
+    
+    const selectedDateTime = new Date(dateString);
+    const now = new Date();
+    const isToday = dateString === now.toISOString().split('T')[0];
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    
+    // Generate show times for each screen
+    Object.keys(showTimesData).forEach(screen => {
+      const li = document.createElement('li');
+      li.className = 'time-li';
+      
+      const screenDiv = document.createElement('div');
+      screenDiv.className = 'screens';
+      screenDiv.textContent = screen;
+      
+      const timeBtnDiv = document.createElement('div');
+      timeBtnDiv.className = 'time-btn';
+      
+      // Add time buttons
+      showTimesData[screen].forEach(time => {
+        const [hour, minute] = time.split(':').map(Number);
+        
+        // Check if show time has passed (only for today)
+        let isPast = false;
+        if (isToday) {
+          if (hour < currentHour || (hour === currentHour && minute <= currentMinute)) {
+            isPast = true;
+          }
+        }
+        
+        const button = document.createElement('button');
+        button.className = 'screen-time';
+        button.textContent = formatTime(time);
+        button.setAttribute('data-time', time);
+        button.setAttribute('data-screen', screen);
+        
+        if (isPast) {
+          button.disabled = true;
+          button.classList.add('past-time');
+          button.title = 'Show time has passed';
+        } else {
+          button.onclick = function() { selectShowTime(this, screen, time); };
+        }
+        
+        timeBtnDiv.appendChild(button);
+      });
+      
+      li.appendChild(screenDiv);
+      li.appendChild(timeBtnDiv);
+      container.appendChild(li);
+    });
+  }
+
+  function formatTime(time24) {
+    const [hour, minute] = time24.split(':').map(Number);
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
+  }
+
+  function selectShowTime(button, screen, time) {
+    // Remove previous time selection
+    document.querySelectorAll('.screen-time').forEach(btn => {
+      btn.classList.remove('selected-time');
+    });
+    
+    // Set new selection
+    button.classList.add('selected-time');
+    selectedTime = time;
+    selectedScreen = screen;
+    
+    // Enable continue button
+    document.getElementById("screen-next-btn").disabled = false;
+    
+    // Store booking details
+    sessionStorage.setItem('bookingDate', selectedDate);
+    sessionStorage.setItem('bookingTime', time);
+    sessionStorage.setItem('bookingScreen', screen);
+    
+    console.log('Selected:', { date: selectedDate, time: time, screen: screen });
+  }
+
+  // Keep old function name for compatibility
   function timeFunction() {
     document.getElementById("screen-next-btn").disabled = false;
   }
 
   function myFunction(id) {
-    document.getElementById(prevId).style.background = "rgb(243, 235, 235)";
-    document.getElementById(id).style.background = "#df0e62";
-    prevId = id;
+    selectDate(id, selectedDate);
   }
 </script>
 
@@ -493,7 +550,81 @@
 </script>
 <script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
 <script src="assets/js/theme-change.js"></script>
+<script src="assets/js/booking-manager.js"></script>
 
 <script type="text/javascript" src="assets/js/ticket-booking.js"></script>
+
+<script>
+  // Handle payment confirmation and create booking
+  document.addEventListener('DOMContentLoaded', function() {
+    const paymentBtn = document.querySelector('.pay-btn');
+    
+    if (paymentBtn) {
+      paymentBtn.addEventListener('click', function() {
+        // Get booking details from session storage
+        const bookingDate = sessionStorage.getItem('bookingDate');
+        const bookingTime = sessionStorage.getItem('bookingTime');
+        const bookingScreen = sessionStorage.getItem('bookingScreen');
+        
+        // Get payment details
+        const cardholderName = document.getElementById('cname')?.value || 'Guest User';
+        const paymentMethod = document.querySelector('input[name="payment"]:checked')?.nextSibling?.textContent || 'Card';
+        
+        // Create booking if we have the required data
+        if (bookingDate && bookingTime && bookingScreen && window.bookingManager) {
+          const booking = window.bookingManager.createBooking({
+            userName: cardholderName,
+            userEmail: cardholderName.toLowerCase().replace(' ', '.') + '@example.com',
+            movieName: 'Selected Movie', // You can get this from URL params or session
+            screen: bookingScreen,
+            date: bookingDate,
+            time: bookingTime,
+            seats: ['A1', 'A2'], // Get from seat selection
+            seatCount: 2, // Get from seat selection
+            amount: 400, // Calculate based on seats
+            paymentMethod: paymentMethod.includes('PayPal') ? 'PayPal' : 'Card',
+            status: 'Confirmed'
+          });
+          
+          console.log('Booking created successfully:', booking);
+          
+          // Store booking ID for e-ticket display
+          sessionStorage.setItem('currentBookingId', booking.id);
+          
+          // Update e-ticket with booking details
+          updateETicket(booking);
+        }
+      });
+    }
+  });
+  
+  // Update e-ticket display with booking details
+  function updateETicket(booking) {
+    // Update movie title
+    const movieTitle = document.querySelector('.movie-title');
+    if (movieTitle) movieTitle.textContent = booking.movieName;
+    
+    // Update screen
+    const screenCell = document.querySelector('.info-table td.bigger');
+    if (screenCell) screenCell.textContent = booking.screen.replace('Screen ', '');
+    
+    // Update date
+    const dateCell = document.querySelectorAll('.info-table td')[7];
+    if (dateCell) dateCell.textContent = new Date(booking.date).toLocaleDateString();
+    
+    // Update time
+    const timeCell = document.querySelectorAll('.info-table td')[8];
+    if (timeCell) {
+      const [hour, minute] = booking.time.split(':').map(Number);
+      const period = hour >= 12 ? 'PM' : 'AM';
+      const hour12 = hour % 12 || 12;
+      timeCell.textContent = `${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
+    }
+    
+    // Update price
+    const priceCell = document.querySelectorAll('.info-table td')[6];
+    if (priceCell) priceCell.textContent = `₹${booking.amount}.00`;
+  }
+</script>
 
 </html>

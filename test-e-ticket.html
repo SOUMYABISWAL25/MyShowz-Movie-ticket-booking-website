@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test E-Ticket System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #df0e62;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        button {
+            background: #df0e62;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #c00d56;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #c8e6c9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        pre {
+            background: #263238;
+            color: #aed581;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 E-Ticket System Test</h1>
+        
+        <div class="section">
+            <h2>Step 1: Create Test Bookings</h2>
+            <p>First, create some test bookings in the system:</p>
+            <button onclick="createTestBookings()">Create 3 Test Bookings</button>
+            <div id="booking-status"></div>
+        </div>
+
+        <div class="section">
+            <h2>Step 2: View E-Tickets</h2>
+            <p>Open e-ticket page with different booking data:</p>
+            <button onclick="viewLatestTicket()">View Latest E-Ticket</button>
+            <button onclick="viewTicketByUrl()">View E-Ticket with URL Parameter</button>
+            <div id="ticket-info"></div>
+        </div>
+
+        <div class="section">
+            <h2>Step 3: Check Booking Data</h2>
+            <button onclick="showAllBookings()">Show All Bookings</button>
+            <div id="bookings-list"></div>
+        </div>
+
+        <div class="info">
+            <h3>ℹ️ How It Works:</h3>
+            <ul>
+                <li><strong>e-ticket.html</strong> now loads booking data from localStorage</li>
+                <li>Displays the most recent booking by default</li>
+                <li>Can display specific booking using URL: <code>e-ticket.html?bookingId=BK123...</code></li>
+                <li>Falls back to sample data if no bookings exist</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="assets/js/booking-manager.js"></script>
+    <script>
+        function createTestBookings() {
+            const statusDiv = document.getElementById('booking-status');
+            statusDiv.innerHTML = '<p>Creating test bookings...</p>';
+            
+            const testBookings = [
+                {
+                    userName: 'John Doe',
+                    userEmail: 'john.doe@example.com',
+                    movieName: 'Avatar: The Way of Water',
+                    screen: 'Screen 1',
+                    date: '2025-10-30',
+                    time: '19:00',
+                    seats: ['A5', 'A6'],
+                    seatCount: 2,
+                    amount: 400,
+                    status: 'Confirmed'
+                },
+                {
+                    userName: 'Jane Smith',
+                    userEmail: 'jane.smith@example.com',
+                    movieName: 'Spider-Man: No Way Home',
+                    screen: 'Screen 2',
+                    date: '2025-10-31',
+                    time: '16:00',
+                    seats: ['B3', 'B4', 'B5'],
+                    seatCount: 3,
+                    amount: 600,
+                    status: 'Confirmed'
+                },
+                {
+                    userName: 'Mike Johnson',
+                    userEmail: 'mike.johnson@example.com',
+                    movieName: 'Inception',
+                    screen: 'Screen 3',
+                    date: '2025-11-01',
+                    time: '21:00',
+                    seats: ['C1', 'C2'],
+                    seatCount: 2,
+                    amount: 400,
+                    status: 'Confirmed'
+                }
+            ];
+
+            const createdBookings = [];
+            testBookings.forEach(bookingData => {
+                const booking = window.bookingManager.createBooking(bookingData);
+                createdBookings.push(booking);
+            });
+
+            statusDiv.innerHTML = `
+                <div class="success">
+                    <h3>✅ Success!</h3>
+                    <p>Created ${createdBookings.length} test bookings:</p>
+                    <pre>${JSON.stringify(createdBookings.map(b => ({
+                        id: b.id,
+                        movie: b.movieName,
+                        user: b.userName,
+                        date: b.date,
+                        time: b.time
+                    })), null, 2)}</pre>
+                </div>
+            `;
+        }
+
+        function viewLatestTicket() {
+            const bookings = window.bookingManager.getRecentBookings(1);
+            if (bookings.length > 0) {
+                window.open('e-ticket.html', '_blank');
+            } else {
+                alert('No bookings found. Please create test bookings first.');
+            }
+        }
+
+        function viewTicketByUrl() {
+            const bookings = window.bookingManager.getAllBookings();
+            if (bookings.length > 0) {
+                const bookingId = bookings[0].id;
+                window.open(`e-ticket.html?bookingId=${bookingId}`, '_blank');
+            } else {
+                alert('No bookings found. Please create test bookings first.');
+            }
+        }
+
+        function showAllBookings() {
+            const bookings = window.bookingManager.getAllBookings();
+            const listDiv = document.getElementById('bookings-list');
+            
+            if (bookings.length === 0) {
+                listDiv.innerHTML = '<p>No bookings found. Create some test bookings first.</p>';
+                return;
+            }
+
+            listDiv.innerHTML = `
+                <div class="success">
+                    <h3>📋 All Bookings (${bookings.length})</h3>
+                    <pre>${JSON.stringify(bookings.map(b => ({
+                        id: b.id,
+                        movie: b.movieName,
+                        user: b.userName,
+                        screen: b.screen,
+                        date: b.date,
+                        time: b.time,
+                        seats: b.seats,
+                        amount: b.amount,
+                        status: b.status
+                    })), null, 2)}</pre>
+                </div>
+            `;
+        }
+
+        // Check system status on load
+        window.onload = function() {
+            const bookings = window.bookingManager.getAllBookings();
+            console.log('System loaded. Current bookings:', bookings.length);
+        };
+    </script>
+</body>
+</html>

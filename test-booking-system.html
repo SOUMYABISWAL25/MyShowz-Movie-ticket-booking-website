@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Booking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #df0e62;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        button {
+            background: #df0e62;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #c70050;
+        }
+        .success {
+            background: #28a745;
+        }
+        .success:hover {
+            background: #218838;
+        }
+        .info {
+            background: #17a2b8;
+        }
+        .info:hover {
+            background: #138496;
+        }
+        .warning {
+            background: #ffc107;
+            color: #000;
+        }
+        .warning:hover {
+            background: #e0a800;
+        }
+        #output {
+            background: #000;
+            color: #0f0;
+            padding: 20px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #df0e62;
+        }
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #df0e62;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #df0e62;
+            color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge-success {
+            background: #28a745;
+            color: white;
+        }
+        .badge-warning {
+            background: #ffc107;
+            color: #000;
+        }
+        .badge-danger {
+            background: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 MyShowz Booking System Test</h1>
+        
+        <div class="section">
+            <h2>System Status</h2>
+            <p id="status">Checking...</p>
+            <div class="stats" id="stats"></div>
+        </div>
+
+        <div class="section">
+            <h2>Quick Actions</h2>
+            <button onclick="createTestBooking()">Create Test Booking</button>
+            <button onclick="create5Bookings()" class="success">Create 5 Bookings</button>
+            <button onclick="viewAllBookings()" class="info">View All Bookings</button>
+            <button onclick="viewStatistics()" class="info">View Statistics</button>
+            <button onclick="clearAllBookings()" class="warning">Clear All Bookings</button>
+        </div>
+
+        <div class="section">
+            <h2>Console Output</h2>
+            <div id="output">Ready...</div>
+        </div>
+
+        <div class="section">
+            <h2>Bookings Table</h2>
+            <div id="table-container"></div>
+        </div>
+    </div>
+
+    <script src="assets/js/booking-manager.js"></script>
+    <script>
+        const output = document.getElementById('output');
+        const statusEl = document.getElementById('status');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
+            output.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function checkSystem() {
+            if (window.bookingManager) {
+                statusEl.innerHTML = '✅ <strong>Booking Manager: LOADED</strong>';
+                log('Booking Manager initialized successfully', 'success');
+                updateStats();
+                return true;
+            } else {
+                statusEl.innerHTML = '❌ <strong>Booking Manager: NOT LOADED</strong>';
+                log('ERROR: Booking Manager not found!', 'error');
+                return false;
+            }
+        }
+
+        function updateStats() {
+            const stats = bookingManager.getStatistics();
+            const statsHtml = `
+                <div class="stat-card">
+                    <h3>Total Bookings</h3>
+                    <div class="value">${stats.totalBookings}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Confirmed</h3>
+                    <div class="value">${stats.confirmedBookings}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Pending</h3>
+                    <div class="value">${stats.pendingBookings}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Revenue</h3>
+                    <div class="value">₹${stats.totalRevenue.toLocaleString()}</div>
+                </div>
+            `;
+            document.getElementById('stats').innerHTML = statsHtml;
+        }
+
+        function createTestBooking() {
+            if (!checkSystem()) return;
+
+            const movies = ['Avatar 2', 'Spider-Man', 'Inception', 'Avengers', 'Black Panther'];
+            const screens = ['Screen 1', 'Screen 2', 'Screen 3', 'Screen 4', 'Screen 5'];
+            const times = ['09:00', '13:00', '16:00', '19:00', '22:00'];
+            const statuses = ['Confirmed', 'Pending'];
+
+            const booking = bookingManager.createBooking({
+                userName: 'Test User ' + Math.floor(Math.random() * 100),
+                userEmail: 'test' + Date.now() + '@example.com',
+                movieName: movies[Math.floor(Math.random() * movies.length)],
+                screen: screens[Math.floor(Math.random() * screens.length)],
+                date: new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                time: times[Math.floor(Math.random() * times.length)],
+                seats: ['A1', 'A2'],
+                seatCount: 2,
+                amount: 200 + Math.floor(Math.random() * 400),
+                status: statuses[Math.floor(Math.random() * statuses.length)]
+            });
+
+            log(`Created booking: ${booking.id} - ${booking.movieName} - ₹${booking.amount}`, 'success');
+            updateStats();
+            viewAllBookings();
+        }
+
+        function create5Bookings() {
+            if (!checkSystem()) return;
+            
+            log('Creating 5 test bookings...', 'info');
+            for (let i = 0; i < 5; i++) {
+                createTestBooking();
+            }
+            log('5 bookings created successfully!', 'success');
+        }
+
+        function viewAllBookings() {
+            if (!checkSystem()) return;
+
+            const bookings = bookingManager.getAllBookings();
+            log(`Total bookings: ${bookings.length}`, 'info');
+
+            if (bookings.length === 0) {
+                document.getElementById('table-container').innerHTML = '<p>No bookings found.</p>';
+                return;
+            }
+
+            let tableHtml = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>User</th>
+                            <th>Movie</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Screen</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            bookings.forEach(b => {
+                const statusClass = b.status === 'Confirmed' ? 'success' : 
+                                  b.status === 'Pending' ? 'warning' : 'danger';
+                tableHtml += `
+                    <tr>
+                        <td><strong>${b.id}</strong></td>
+                        <td>${b.userName}</td>
+                        <td>${b.movieName}</td>
+                        <td>${b.date}</td>
+                        <td>${b.time}</td>
+                        <td>${b.screen}</td>
+                        <td><strong>₹${b.amount}</strong></td>
+                        <td><span class="badge badge-${statusClass}">${b.status}</span></td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += '</tbody></table>';
+            document.getElementById('table-container').innerHTML = tableHtml;
+        }
+
+        function viewStatistics() {
+            if (!checkSystem()) return;
+
+            const stats = bookingManager.getStatistics();
+            log('=== STATISTICS ===', 'info');
+            log(`Total Bookings: ${stats.totalBookings}`, 'info');
+            log(`Confirmed: ${stats.confirmedBookings}`, 'success');
+            log(`Pending: ${stats.pendingBookings}`, 'warning');
+            log(`Cancelled: ${stats.cancelledBookings}`, 'error');
+            log(`Total Revenue: ₹${stats.totalRevenue.toLocaleString()}`, 'success');
+            log(`Today's Bookings: ${stats.todayBookings}`, 'info');
+            log('==================', 'info');
+        }
+
+        function clearAllBookings() {
+            if (!checkSystem()) return;
+
+            if (confirm('Are you sure you want to delete ALL bookings? This cannot be undone!')) {
+                bookingManager.clearAllBookings();
+                log('All bookings cleared!', 'warning');
+                updateStats();
+                viewAllBookings();
+            }
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            checkSystem();
+            viewAllBookings();
+        };
+    </script>
+</body>
+</html>
