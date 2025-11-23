@@ -15323,45 +15323,76 @@ uploadForm.addEventListener("submit", async (e) => {
   const posterImage = document.getElementById("posterImage").files[0];
   const file = document.getElementById("movieFile").files[0];
   if (!file) {
-    alert("Please select a movie file.");
+    uploadStatus.innerText = "Please select a movie file.";
+    uploadStatus.style.color = "red";
     return;
   }
   if (!posterImage) {
-    alert("Please select a poster image.");
+    uploadStatus.innerText = "Please select a poster image.";
+    uploadStatus.style.color = "red";
     return;
   }
-  uploadStatus.innerText = "Uploading...";
+  uploadStatus.innerText = "Starting upload...";
   uploadStatus.style.color = "blue";
   try {
+    uploadStatus.innerText = "Uploading poster image...";
     const posterKey = `movies/posters/${Date.now()}-${posterImage.name}`;
-    await uploadData2({
+    const posterUpload = uploadData2({
       key: posterKey,
       data: posterImage,
       options: {
-        accessLevel: "guest"
+        accessLevel: "guest",
+        onProgress: ({ transferredBytes, totalBytes }) => {
+          if (totalBytes) {
+            const percentage = Math.round(transferredBytes / totalBytes * 100);
+            uploadStatus.innerText = `Uploading poster: ${percentage}%`;
+          }
+        }
       }
-    }).result;
+    });
+    await posterUpload.result;
+    console.log("Poster uploaded successfully:", posterKey);
+    uploadStatus.innerText = "Uploading movie file... This may take a while for large files.";
     const s3Key = `movies/${Date.now()}-${file.name}`;
-    await uploadData2({
+    const movieUpload = uploadData2({
       key: s3Key,
       data: file,
       options: {
-        accessLevel: "guest"
+        accessLevel: "guest",
+        onProgress: ({ transferredBytes, totalBytes }) => {
+          if (totalBytes) {
+            const percentage = Math.round(transferredBytes / totalBytes * 100);
+            const mbTransferred = (transferredBytes / (1024 * 1024)).toFixed(2);
+            const mbTotal = (totalBytes / (1024 * 1024)).toFixed(2);
+            uploadStatus.innerText = `Uploading movie: ${percentage}% (${mbTransferred}MB / ${mbTotal}MB)`;
+          }
+        }
       }
-    }).result;
+    });
+    await movieUpload.result;
+    console.log("Movie uploaded successfully:", s3Key);
+    uploadStatus.innerText = "Saving to database...";
     await client.models.Movie.create({
       title,
       description,
       s3Key,
       posterUrl: posterKey
     });
-    uploadStatus.innerText = "Upload Successful!";
+    uploadStatus.innerText = "\u2705 Upload Successful! Movie and poster uploaded.";
     uploadStatus.style.color = "green";
     uploadForm.reset();
+    setTimeout(() => {
+      window.location.href = "admin_dashboard.html";
+    }, 2e3);
   } catch (error) {
     console.error("Error uploading movie:", error);
-    uploadStatus.innerText = "Upload Failed: " + error.message;
+    uploadStatus.innerText = `\u274C Upload Failed: ${error.message}. Please check console for details.`;
     uploadStatus.style.color = "red";
+    console.error("Full error details:", {
+      error,
+      message: error.message,
+      stack: error.stack
+    });
   }
 });
 /*! Bundled license information:
