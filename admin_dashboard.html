@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MyShowz</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/style-starter.css">
+    <style>
+        .admin-container {
+            margin-top: 100px;
+            padding: 20px;
+        }
+
+        .admin-header {
+            margin-bottom: 30px;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #d63447;
+            border-bottom-color: #d63447;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: var(--bg-color, #fff);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .data-table th {
+            background-color: #d63447;
+            color: white;
+            font-weight: bold;
+        }
+
+        .data-table tr:hover {
+            background-color: rgba(214, 52, 71, 0.05);
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-view {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            background: linear-gradient(135deg, #d63447 0%, #f57b51 100%);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .stat-card .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            color: #dc3545;
+            padding: 20px;
+            background-color: #f8d7da;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <header id="site-header" class="w3l-header fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-light fill px-lg-0 py-0 px-3">
+            <div class="container">
+                <h1><a class="navbar-brand" href="index.html"><span class="fa fa-play icon-log"
+                            aria-hidden="true"></span>
+                        MyShowz </a></h1>
+                <button class="navbar-toggler collapsed" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="fa icon-expand fa-bars"></span>
+                    <span class="fa icon-close fa-times"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="movies.html">Movies</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="about.html">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Contact_Us.html">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="movies_download.html">Downloads</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="admin_dashboard.html">Admin Dashboard</a>
+                        </li>
+                    </ul>
+
+                    <div class="Login_SignUp" id="login"
+                        style="font-size: 2rem ; display: inline-block; position: relative;">
+                        <a class="nav-link" href="sign_in.html"><i class="fa fa-user-circle-o"></i></a>
+                    </div>
+                </div>
+                <div class="mobile-position">
+                    <nav class="navigation">
+                        <div class="theme-switch-wrapper">
+                            <label class="theme-switch" for="checkbox">
+                                <input type="checkbox" id="checkbox">
+                                <div class="mode-container">
+                                    <i class="gg-sun"></i>
+                                    <i class="gg-moon"></i>
+                                </div>
+                            </label>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Admin Dashboard -->
+    <div class="container admin-container">
+        <div class="admin-header">
+            <h2>Admin Dashboard</h2>
+            <p>Manage and view all website data</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <h3>Total Movies</h3>
+                <p class="stat-value" id="totalMovies">-</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Users</h3>
+                <p class="stat-value" id="totalUsers">-</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Todos</h3>
+                <p class="stat-value" id="totalTodos">-</p>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="admin-tabs">
+            <button class="tab-btn active" onclick="switchTab('movies')">Movies</button>
+            <button class="tab-btn" onclick="switchTab('todos')">Todos</button>
+            <button class="tab-btn" onclick="switchTab('upload')">Upload New Movie</button>
+        </div>
+
+        <!-- Movies Tab -->
+        <div id="movies-tab" class="tab-content active">
+            <h3>Uploaded Movies</h3>
+            <div id="moviesTableContainer">
+                <div class="loading">Loading movies...</div>
+            </div>
+        </div>
+
+        <!-- Todos Tab -->
+        <div id="todos-tab" class="tab-content">
+            <h3>Todos</h3>
+            <div id="todosTableContainer">
+                <div class="loading">Loading todos...</div>
+            </div>
+        </div>
+
+        <!-- Upload Tab -->
+        <div id="upload-tab" class="tab-content">
+            <h3>Upload New Movie</h3>
+            <iframe src="admin_upload.html"
+                style="width: 100%; height: 600px; border: none; margin-top: 20px;"></iframe>
+        </div>
+    </div>
+
+    <script src="assets/js/bundles/admin-dashboard.js"></script>
+    <script src="assets/js/jquery-3.3.1.min.js"></script>
+    <script src="assets/js/theme-change.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+    <script>
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // Set button as active
+            event.target.classList.add('active');
+        }
+
+        $(function () {
+            $('.navbar-toggler').click(function () {
+                $('body').toggleClass('noscroll');
+            })
+        });
+        $(window).on("scroll", function () {
+            var scroll = $(window).scrollTop();
+            if (scroll >= 80) {
+                $("#site-header").addClass("nav-fixed");
+            } else {
+                $("#site-header").removeClass("nav-fixed");
+            }
+        });
+        $(".navbar-toggler").on("click", function () {
+            $("header").toggleClass("active");
+        });
+    </script>
+</body>
+
+</html>

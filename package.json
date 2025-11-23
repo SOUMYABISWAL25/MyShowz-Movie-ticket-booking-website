@@ -2,7 +2,9 @@
   "name": "myshowz-movie-ticket-booking-website",
   "version": "1.0.0",
   "scripts": {
-    "build": "mkdir -p dist && cp -r assets dist/ && cp *.html dist/"
+    "start": "npx serve .",
+    "build:js": "esbuild assets/js/admin-upload.js --bundle --outfile=assets/js/bundles/admin-upload.js --format=esm && esbuild assets/js/movies-download.js --bundle --outfile=assets/js/bundles/movies-download.js --format=esm && esbuild assets/js/admin-dashboard.js --bundle --outfile=assets/js/bundles/admin-dashboard.js --format=esm",
+    "build": "npm run build:js && mkdir -p dist && cp -r assets dist/ && cp *.html dist/"
   },
   "dependencies": {
     "aws-amplify": "^6.15.7",
