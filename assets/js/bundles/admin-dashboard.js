@@ -14100,6 +14100,13 @@ var amplify_outputs_default = {
               isRequired: false,
               attributes: []
             },
+            category: {
+              name: "category",
+              isArray: false,
+              type: "String",
+              isRequired: false,
+              attributes: []
+            },
             createdAt: {
               name: "createdAt",
               isArray: false,
@@ -14171,11 +14178,12 @@ var amplify_outputs_default = {
         bucket_name: "amplify-myshowzmovieticke-moviedrivebucket6d019d96-pelp1b4cafkd",
         aws_region: "ap-south-1",
         paths: {
-          "movies/*": {
+          "public/*": {
             guest: [
               "get",
               "list",
-              "write"
+              "write",
+              "delete"
             ],
             authenticated: [
               "get",

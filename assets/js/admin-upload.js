@@ -84,7 +84,6 @@ uploadForm.addEventListener('submit', async (e) => {
             key: posterKey,
             data: posterImage,
             options: {
-                accessLevel: 'guest',
                 onProgress: ({ transferredBytes, totalBytes }) => {
                     if (totalBytes) {
                         const percentage = Math.round((transferredBytes / totalBytes) * 100);
@@ -105,7 +104,6 @@ uploadForm.addEventListener('submit', async (e) => {
             key: s3Key,
             data: file,
             options: {
-                accessLevel: 'guest',
                 onProgress: ({ transferredBytes, totalBytes }) => {
                     if (totalBytes) {
                         const percentage = Math.round((transferredBytes / totalBytes) * 100);

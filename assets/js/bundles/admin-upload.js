@@ -15221,6 +15221,13 @@ var amplify_outputs_default = {
               isRequired: false,
               attributes: []
             },
+            category: {
+              name: "category",
+              isArray: false,
+              type: "String",
+              isRequired: false,
+              attributes: []
+            },
             createdAt: {
               name: "createdAt",
               isArray: false,
@@ -15292,11 +15299,12 @@ var amplify_outputs_default = {
         bucket_name: "amplify-myshowzmovieticke-moviedrivebucket6d019d96-pelp1b4cafkd",
         aws_region: "ap-south-1",
         paths: {
-          "movies/*": {
+          "public/*": {
             guest: [
               "get",
               "list",
-              "write"
+              "write",
+              "delete"
             ],
             authenticated: [
               "get",
@@ -15379,7 +15387,6 @@ uploadForm.addEventListener("submit", async (e) => {
       key: posterKey,
       data: posterImage,
       options: {
-        accessLevel: "guest",
         onProgress: ({ transferredBytes, totalBytes }) => {
           if (totalBytes) {
             const percentage = Math.round(transferredBytes / totalBytes * 100);
@@ -15396,7 +15403,6 @@ uploadForm.addEventListener("submit", async (e) => {
       key: s3Key,
       data: file,
       options: {
-        accessLevel: "guest",
         onProgress: ({ transferredBytes, totalBytes }) => {
           if (totalBytes) {
             const percentage = Math.round(transferredBytes / totalBytes * 100);

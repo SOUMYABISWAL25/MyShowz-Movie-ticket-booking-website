@@ -14123,70 +14123,73 @@ var amplify_outputs_default = {
   version: "1.4"
 };
 
-// assets/js/movies-download.js
+// assets/js/index-movies.js
 DefaultAmplify.configure(amplify_outputs_default);
 var client = generateClient2();
-var moviesList = document.getElementById("moviesList");
-async function fetchMovies() {
+async function loadPopularMovies() {
+  const container = document.querySelector(".w3l-populohny-grids");
+  if (!container) return;
   try {
     const { data: movies } = await client.models.Movie.list();
-    if (movies.length === 0) {
-      moviesList.innerHTML = '<div class="text-center" style="width: 100%;">No movies available.</div>';
+    const popularMovies = movies.filter((movie) => movie.category === "Popular Movies");
+    if (popularMovies.length === 0) {
+      console.log("No popular movies found");
       return;
     }
-    moviesList.innerHTML = "";
-    for (const movie of movies) {
-      const linkResult = await getUrl2({
-        key: movie.s3Key,
-        options: {
-          accessLevel: "guest",
-          validateObjectExistence: false
-        }
-      });
-      let posterImageUrl = `assets/images/banner${Math.floor(Math.random() * 4) + 1}.jpg`;
+    container.innerHTML = "";
+    for (const movie of popularMovies.slice(0, 4)) {
+      let posterUrl = "assets/images/default-poster.jpg";
       if (movie.posterUrl) {
         try {
-          const posterResult = await getUrl2({
-            key: movie.posterUrl,
-            options: {
-              accessLevel: "guest",
-              validateObjectExistence: false
-            }
+          const urlResult = await getUrl2({
+            key: movie.posterUrl
           });
-          posterImageUrl = posterResult.url;
-        } catch (err) {
-          console.warn("Could not load poster:", err);
+          posterUrl = urlResult.url.toString();
+        } catch (error) {
+          console.error("Error getting poster URL:", error);
         }
       }
-      const movieCard = document.createElement("div");
-      movieCard.className = "item vhny-grid";
-      movieCard.innerHTML = `
-                <div class="box16 mb-0">
-                    <figure>
-                        <img class="img-fluid" src="${posterImageUrl}" alt="${movie.title}" style="object-fit: cover; height: 300px;">
-                    </figure>
-                    <div class="box-content">
-                        <h3 class="title">${movie.title}</h3>
-                        <p style="font-size: 0.9rem; color: #999;">${movie.description}</p>
-                        <div class="mt-3">
-                            <a href="${linkResult.url}" class="btn btn-primary btn-sm" target="_blank" style="margin-right: 10px;">
-                                <span class="fa fa-play"></span> Watch
-                            </a>
-                            <a href="${linkResult.url}" class="btn btn-secondary btn-sm" download>
-                                <span class="fa fa-download"></span> Download
-                            </a>
-                        </div>
+      let videoUrl = "#";
+      if (movie.s3Key) {
+        try {
+          const videoResult = await getUrl2({
+            key: movie.s3Key
+          });
+          videoUrl = videoResult.url.toString();
+        } catch (error) {
+          console.error("Error getting video URL:", error);
+        }
+      }
+      const movieCard = `
+                <div class="item vhny-grid">
+                    <div class="box16">
+                        <a href="${videoUrl}" target="_blank">
+                            <figure>
+                                <img class="img-fluid" src="${posterUrl}" alt="${movie.title}" onerror="this.src='assets/images/default-poster.jpg'">
+                            </figure>
+                            <div class="box-content">
+                                <h3 class="title">${movie.title}</h3>
+                                <h4>
+                                    <span class="post"><span class="fa fa-clock-o"></span> ${movie.category}</span>
+                                    <span class="post fa fa-heart text-right"></span>
+                                </h4>
+                            </div>
+                            <span class="fa fa-play video-icon" aria-hidden="true"></span>
+                        </a>
                     </div>
                 </div>
             `;
-      moviesList.appendChild(movieCard);
+      container.innerHTML += movieCard;
     }
   } catch (error) {
-    console.error("Error fetching movies:", error);
-    moviesList.innerHTML = `<div class="text-center text-danger" style="width: 100%;">Error loading movies: ${error.message}</div>`;
+    console.error("Error loading popular movies:", error);
   }
 }
-fetchMovies();
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", loadPopularMovies);
+} else {
+  loadPopularMovies();
+}
 /*! Bundled license information:
 
 js-cookie/dist/js.cookie.mjs:
