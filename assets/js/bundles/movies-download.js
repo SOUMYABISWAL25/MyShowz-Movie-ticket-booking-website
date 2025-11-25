@@ -14098,7 +14098,8 @@ var amplify_outputs_default = {
           "movies/*": {
             guest: [
               "get",
-              "list"
+              "list",
+              "write"
             ],
             authenticated: [
               "get",

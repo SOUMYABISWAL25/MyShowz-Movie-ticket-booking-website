@@ -42,6 +42,7 @@ async function loadMovies() {
                     <tr>
                         <th>ID</th>
                         <th>Title</th>
+                        <th>Category</th>
                         <th>Description</th>
                         <th>S3 Key</th>
                         <th>Created At</th>
@@ -53,10 +54,12 @@ async function loadMovies() {
 
         for (const movie of movies) {
             const createdAt = movie.createdAt ? new Date(movie.createdAt).toLocaleString() : 'N/A';
+            const category = movie.category || 'N/A';
             tableHTML += `
                 <tr>
                     <td>${movie.id.substring(0, 8)}...</td>
                     <td><strong>${movie.title}</strong></td>
+                    <td><span style="background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 12px;">${category}</span></td>
                     <td>${movie.description}</td>
                     <td style="font-size: 11px; color: #666;">${movie.s3Key}</td>
                     <td>${createdAt}</td>

@@ -9,12 +9,54 @@ const client = generateClient();
 const uploadForm = document.getElementById('uploadForm');
 const uploadStatus = document.getElementById('uploadStatus');
 
+// File input listeners
+const posterInput = document.getElementById('posterImage');
+const movieInput = document.getElementById('movieFile');
+
+if (posterInput) {
+    posterInput.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        const feedback = document.getElementById('posterFeedback');
+        console.log('Poster file selected:', file);
+        if (file) {
+            const sizeKB = (file.size / 1024).toFixed(2);
+            feedback.textContent = `✓ Selected: ${file.name} (${sizeKB} KB)`;
+            feedback.style.color = '#4CAF50';
+        } else {
+            feedback.textContent = '';
+        }
+    });
+}
+
+if (movieInput) {
+    movieInput.addEventListener('change', function (e) {
+        const file = e.target.files[0];
+        const feedback = document.getElementById('fileFeedback');
+        console.log('Movie file selected:', file);
+        if (file) {
+            const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+            feedback.textContent = `✓ Selected: ${file.name} (${sizeMB} MB)`;
+            feedback.style.color = '#4CAF50';
+        } else {
+            feedback.textContent = '';
+        }
+    });
+}
+
+
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const title = document.getElementById('title').value;
     const description = document.getElementById('description').value;
+    const category = document.getElementById('category').value;
     const posterImage = document.getElementById('posterImage').files[0];
     const file = document.getElementById('movieFile').files[0];
+
+    if (!category) {
+        uploadStatus.innerText = 'Please select a category.';
+        uploadStatus.style.color = 'red';
+        return;
+    }
 
     if (!file) {
         uploadStatus.innerText = 'Please select a movie file.';
@@ -27,6 +69,8 @@ uploadForm.addEventListener('submit', async (e) => {
         uploadStatus.style.color = 'red';
         return;
     }
+
+    console.log(`File size: ${(file.size / (1024 * 1024)).toFixed(2)} MB`);
 
     uploadStatus.innerText = 'Starting upload...';
     uploadStatus.style.color = 'blue';
@@ -81,6 +125,7 @@ uploadForm.addEventListener('submit', async (e) => {
         await client.models.Movie.create({
             title: title,
             description: description,
+            category: category,
             s3Key: s3Key,
             posterUrl: posterKey
         });

@@ -18,6 +18,7 @@ const schema = a.schema({
       description: a.string(),
       s3Key: a.string(),
       posterUrl: a.string(),
+      category: a.string(),
     })
     .authorization((allow) => [allow.guest(), allow.authenticated()]),
 });
